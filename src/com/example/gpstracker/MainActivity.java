@@ -32,9 +32,6 @@ public class MainActivity extends Activity implements OnClickListener {
 	 */
 	private LocationListener locationListener = new LocationListener() {
 
-		/**
-		 * Called when a new location is found by the network location provider.
-		 */
 		@Override
 		public void onLocationChanged(Location location) {
 			listening = true;
@@ -101,17 +98,16 @@ public class MainActivity extends Activity implements OnClickListener {
 	 * Requesting last location from GPS or Network provider
 	 */
 	private void requestLastKnownLocation() {
-		Location location;
 
 		if (currentLocation != null) {
 			return;
 		}
 
 		// get last known location from gps provider
-		location = this.locationManager
+		Location location = this.locationManager
 				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-		if (location != null) {
+		if (location == null) {
 			// try network provider
 			location = this.locationManager
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -149,11 +145,10 @@ public class MainActivity extends Activity implements OnClickListener {
 	 */
 	private void showGPSDisabledAlert() {
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-		alertDialogBuilder
-				.setMessage(
-						"GPS is disabled in your device. Would you like to enable it?")
-				.setCancelable(false)
-				.setPositiveButton("Goto Settings Page To Enable GPS",
+		alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?");
+		alertDialogBuilder.setCancelable(false);
+		
+		alertDialogBuilder.setPositiveButton("Goto Settings Page To Enable GPS",
 						new DialogInterface.OnClickListener() {
 							public void onClick(DialogInterface dialog, int id) {
 								Intent callGPSSettingIntent = new Intent(
@@ -161,12 +156,14 @@ public class MainActivity extends Activity implements OnClickListener {
 								startActivity(callGPSSettingIntent);
 							}
 						});
+		
 		alertDialogBuilder.setNegativeButton("Cancel",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
 					}
 				});
+		
 		AlertDialog alert = alertDialogBuilder.create();
 		alert.show();
 	}
@@ -175,8 +172,9 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.registerReceiver:
+			
 			if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-				Toast.makeText(this, "GPS is Enabled", Toast.LENGTH_SHORT)
+				Toast.makeText(getApplicationContext(), "GPS is Enabled", Toast.LENGTH_SHORT)
 						.show();
 
 				this.requestLastKnownLocation();

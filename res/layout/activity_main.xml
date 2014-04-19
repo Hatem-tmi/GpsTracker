@@ -24,6 +24,6 @@
         android:layout_below="@+id/registerReceiver"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="27dp"
-        android:text="Unregister Location Receiver" />
+        android:text="Unregister LocationReceiver" />
 
 </RelativeLayout>
