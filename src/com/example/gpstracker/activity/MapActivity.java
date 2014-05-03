@@ -98,8 +98,8 @@ public class MapActivity extends FragmentActivity implements
 					.icon(BitmapDescriptorFactory
 							.fromResource(R.drawable.ic_launcher)));
 
-			// Move the camera instantly to tunis with a zoom of 15.
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(TUNIS, 15));
+			// Move the camera instantly to sousse with a zoom of 15.
+			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SOUSSE, 15));
 
 			// Zoom in, animating the camera.
 			googleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
