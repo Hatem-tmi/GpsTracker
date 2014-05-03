@@ -21,6 +21,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	private Button registerReceiver;
 	private Button unregisterReceiver;
+	private Button openMapButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +31,11 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		registerReceiver = (Button) findViewById(R.id.registerReceiver);
 		unregisterReceiver = (Button) findViewById(R.id.unregisterReceiver);
+		openMapButton = (Button) findViewById(R.id.openMapButton);
 
 		registerReceiver.setOnClickListener(this);
 		unregisterReceiver.setOnClickListener(this);
+		openMapButton.setOnClickListener(this);
 	}
 
 	@Override
@@ -82,7 +85,8 @@ public class MainActivity extends Activity implements OnClickListener {
 						Toast.LENGTH_SHORT).show();
 
 				// Start service
-				Intent intent = new Intent(getApplicationContext(), GpsTrackerService.class);
+				Intent intent = new Intent(getApplicationContext(),
+						GpsTrackerService.class);
 				startService(intent);
 
 			} else {
@@ -91,8 +95,14 @@ public class MainActivity extends Activity implements OnClickListener {
 			break;
 		case R.id.unregisterReceiver:
 			// Stop service
-			Intent intent = new Intent(getApplicationContext(), GpsTrackerService.class);
+			Intent intent = new Intent(getApplicationContext(),
+					GpsTrackerService.class);
 			stopService(intent);
+			break;
+		case R.id.openMapButton:
+			// TODO - Open Map View
+			Intent intent1 = new Intent(getApplicationContext(), MapActivity.class);
+			startActivity(intent1);
 			break;
 		default:
 			break;

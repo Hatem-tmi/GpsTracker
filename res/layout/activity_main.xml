@@ -26,4 +26,13 @@
         android:layout_marginTop="27dp"
         android:text="Unregister LocationReceiver" />
 
+    <Button
+        android:id="@+id/openMapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/unregisterReceiver"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="31dp"
+        android:text="Open Map" />
+
 </RelativeLayout>
