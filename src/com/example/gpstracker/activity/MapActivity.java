@@ -1,6 +1,7 @@
 package com.example.gpstracker.activity;
 
 import android.content.IntentSender;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
@@ -9,6 +10,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.gpstracker.R;
+import com.example.gpstracker.model.RoutePath;
+import com.example.gpstracker.tasks.GetDirectionsPathTask;
+import com.example.gpstracker.tasks.GetDirectionsPathTask.GetDirectionsPathTaskCallback;
+import com.example.gpstracker.util.Constants;
+import com.example.gpstracker.util.Constants.MapDirectionsAPI.StatusCode;
 import com.example.gpstracker.util.Utils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -24,15 +30,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MapActivity extends FragmentActivity implements
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener,
 		com.google.android.gms.location.LocationListener, OnMapClickListener {
 	public static final String TAG = MapActivity.class.getSimpleName();
-
-	public static final LatLng TUNIS = new LatLng(36.882638, 9.955312);
-	public static final LatLng SOUSSE = new LatLng(35.852025, 10.619786);
 
 	// Update frequency in milliseconds
 	public static final long UPDATE_INTERVAL = 1000 * 5;
@@ -48,11 +52,10 @@ public class MapActivity extends FragmentActivity implements
 		setContentView(R.layout.map_layout);
 		Log.d(TAG, "onCreate");
 
-		initViews();
+		initMap();
 
 		locationClient = new LocationClient(getApplicationContext(), this, this);
 		createLocationRequest();
-//		registerLocationListener();
 	}
 
 	@Override
@@ -64,6 +67,38 @@ public class MapActivity extends FragmentActivity implements
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+
+		new GetDirectionsPathTask(this, Constants.SOUSSE, Constants.TUNIS,
+				new GetDirectionsPathTaskCallback() {
+					@Override
+					public void onFailureGettingDirectionsPath(
+							StatusCode statusCode) {
+						Log.d(TAG, "onFailureGettingDirectionsPath");
+					}
+
+					@Override
+					public void onDoneGettingDirectionsPath(RoutePath path) {
+						Log.d(TAG, "onDoneGettingDirectionsPath");
+
+						if (path != null && path.getPathPoints() != null) {
+							PolylineOptions polylineOptions = new PolylineOptions();
+
+							// Adding all the points in the route to LineOptions
+							polylineOptions.addAll(path.getPathPoints());
+							polylineOptions.width(2);
+							polylineOptions.color(Color.RED);
+
+							// Drawing polyline in the Google Map for the i-th
+							// route
+							googleMap.addPolyline(polylineOptions);
+						}
+					}
+				}).start();
+	}
+
+	@Override
 	public void onStop() {
 		if (locationClient != null) {
 			locationClient.disconnect();
@@ -71,12 +106,9 @@ public class MapActivity extends FragmentActivity implements
 		super.onStop();
 	}
 
-	private void initViews() {
-		Log.d(TAG, "onCreateView");
-
-		initMap();
-	}
-
+	/**
+	 * Initialize map with markers
+	 */
 	private void initMap() {
 		Log.d(TAG, "initMapView");
 		googleMap = ((SupportMapFragment) getSupportFragmentManager()
@@ -91,16 +123,17 @@ public class MapActivity extends FragmentActivity implements
 			googleMap.setOnMapClickListener(this);
 
 			Marker tunis = googleMap.addMarker(new MarkerOptions().position(
-					TUNIS).title("Hamburg"));
+					Constants.TUNIS).title("Tunis"));
 			Marker sousse = googleMap.addMarker(new MarkerOptions()
-					.position(SOUSSE)
+					.position(Constants.SOUSSE)
 					.title("Sousse")
 					.snippet("Sousse ville du sahel")
 					.icon(BitmapDescriptorFactory
 							.fromResource(R.drawable.ic_launcher)));
 
 			// Move the camera instantly to sousse with a zoom of 15.
-			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SOUSSE, 15));
+			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+					Constants.SOUSSE, 15));
 
 			// Zoom in, animating the camera.
 			googleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
@@ -184,6 +217,8 @@ public class MapActivity extends FragmentActivity implements
 	@Override
 	public void onConnected(Bundle bundle) {
 		Log.d(TAG, "Location Services is connected");
+
+		registerLocationListener();
 	}
 
 	@Override
