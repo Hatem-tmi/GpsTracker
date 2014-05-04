@@ -127,7 +127,7 @@ public class MapActivity extends FragmentActivity implements
 			Marker sousse = googleMap.addMarker(new MarkerOptions()
 					.position(Constants.SOUSSE)
 					.title("Sousse")
-					.snippet("Sousse ville du sahel")
+					.snippet("Ville du Sahel")
 					.icon(BitmapDescriptorFactory
 							.fromResource(R.drawable.ic_launcher)));
 
@@ -224,6 +224,7 @@ public class MapActivity extends FragmentActivity implements
 	@Override
 	public void onDisconnected() {
 		Log.d(TAG, "Location client drops because of an error");
+		unregisterLocationListener();
 	}
 
 	@Override
